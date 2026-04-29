@@ -1,0 +1,208 @@
+# PDF to Markdown Agent Configuration
+# Operator Configuration for LLM-Assisted Processing
+
+agent:
+  name: PDF-to-Markdown-Agent
+  version: 1.0.0
+  description: Converts PDF documents to well-formatted Markdown with proper handling of images and mathematical expressions
+
+# LLM Configuration
+llm:
+  # Primary LLM for complex tasks
+  primary:
+    provider: openai  # Options: openai, anthropic, google, ollama
+    model: gpt-4o
+    temperature: 0.1
+    max_tokens: 4096
+    
+  # Fallback LLM for simpler tasks
+  fallback:
+    provider: openai
+    model: gpt-4o-mini
+    temperature: 0.1
+    max_tokens: 2048
+
+  # Vision LLM for image analysis
+  vision:
+    provider: openai
+    model: gpt-4o
+    temperature: 0.2
+    max_tokens: 1024
+
+# Processing Configuration
+processing:
+  # OCR Settings
+  ocr:
+    enabled: true
+    force_ocr: false  # Set to true for scanned PDFs
+    language: en
+    
+  # Math Processing
+  math:
+    use_llm: true  # Use LLM for complex equation conversion
+    confidence_threshold: 0.8  # Below this, request LLM assistance
+    inline_delimiter: $  # Single dollar sign for inline math
+    display_delimiter: # SOP 06: Markdown Assembly and Output
+
+## Objective
+Assemble all processed components into a cohesive, well-formatted markdown document.
+
+## Trigger
+- Prerequisite: All content processing SOPs completed
+- Input: Processed text, math, images, and tables
+
+## Procedure
+
+### Step 1: Document Structure Creation
+Build document skeleton:
+1. Extract document title from first heading or metadata
+2. Create table of contents from headers
+3. Establish section hierarchy (H1 > H2 > H3...)
+4. Identify front matter (abstract, author info)
+
+### Step 2: Content Assembly
+Assemble components in reading order:
+
+#### Header Section
+- Title (H1)
+- Author(s) and affiliations
+- Abstract (if present)
+- Keywords
+
+#### Body Content
+- Sections with proper heading levels
+- Paragraphs with preserved formatting
+- Lists (bulleted and numbered)
+- Block quotes
+
+#### Special Elements
+- Equations (inline and display)
+- Tables with captions
+- Figures with captions and alt text
+- Code blocks with language specification
+
+#### End Matter
+- References/Bibliography
+- Appendices
+- Footnotes
+
+### Step 3: Cross-Reference Resolution
+Handle internal references:
+- Figure references (Figure 1, Fig. 1)
+- Table references (Table 1, Tab. 1)
+- Equation references (Equation 1, Eq. 1)
+- Section references
+- Citation references
+
+### Step 4: Formatting Normalization
+Apply consistent formatting:
+- Heading capitalization (Title Case or Sentence case)
+- Consistent spacing between sections
+- Proper line breaks (two spaces or blank line)
+- List formatting consistency
+
+### Step 5: Metadata Injection
+Add document metadata as YAML front matter:
+`yaml
+---
+title: Document Title
+author: Author Name
+date: YYYY-MM-DD
+source: original_filename.pdf
+converted: conversion_timestamp
+---
+`
+
+### Step 6: Quality Assurance
+Final validation:
+1. Verify all sections are present
+2. Check all images are referenced and exist
+3. Validate all links (internal and external)
+4. Test math rendering
+5. Preview table formatting
+6. Spell check (optional)
+
+## Output Structure
+`
+output/
+ document_name.md          # Main markdown file
+ images/                   # Extracted images
+    fig_001.png
+    fig_002.png
+ metadata.json            # Conversion metadata
+`
+
+## Markdown Best Practices
+
+### Headings
+- Single H1 for document title
+- Logical heading hierarchy
+- No skipping levels (H1 > H3)
+
+### Paragraphs
+- Blank line between paragraphs
+- No trailing whitespace
+
+### Lists
+- Consistent markers (- or *)
+- Proper indentation for nested lists
+
+### Code
+- Triple backticks with language identifier
+- Inline code with single backticks
+
+### Links
+- Descriptive link text
+- Relative paths for local files
+
+## Error Handling
+- Missing sections: Log warning, continue assembly
+- Broken references: Flag for operator review
+- Rendering issues: Test alternatives, document limitations
+
+## Operator Intervention Points
+- Final document review
+- Reference resolution conflicts
+- Formatting decisions for edge cases
+- Quality approval before delivery  # Double dollar sign for display math
+    
+  # Image Processing
+  images:
+    extract: true
+    format: png  # Options: png, jpg, webp
+    max_width: 2000
+    quality: 85  # For JPEG
+    generate_alt_text: true
+    
+  # Table Processing
+  tables:
+    use_llm: true  # Use LLM for complex table reconstruction
+    prefer_html: false  # Use HTML only for merged cells
+    
+# Output Configuration
+output:
+  format: markdown
+  include_metadata: true
+  include_toc: true
+  image_folder: images
+  
+# Operator Intervention Settings
+intervention:
+  # Conditions that require operator (LLM) review
+  triggers:
+    - low_confidence_math  # Math conversion confidence < threshold
+    - complex_table  # Tables with merged cells or spanning pages
+    - ambiguous_reading_order  # Multi-column layout ambiguity
+    - image_description_needed  # Complex figures needing description
+    - quality_review  # Final document quality check
+    
+  # Auto-resolve settings
+  auto_resolve:
+    enabled: true
+    max_retries: 3
+    
+# Logging Configuration
+logging:
+  level: INFO  # Options: DEBUG, INFO, WARNING, ERROR
+  file: logs/conversion.log
+  include_timestamps: true

@@ -1,0 +1,34 @@
+# PDF to Markdown Converter - Dependencies
+# Install with: pip install -r requirements.txt
+
+# Core PDF Processing
+PyMuPDF>=1.24.0          # PDF manipulation and text extraction
+pymupdf4llm>=0.0.10      # LLM-optimized PDF processing
+
+# Advanced PDF to Markdown (with ML models)
+marker-pdf>=0.3.0        # High-quality PDF to markdown with OCR, math, tables
+
+# Image Processing
+Pillow>=10.0.0           # Image manipulation and optimization
+
+# LLM Integration
+openai>=1.30.0           # OpenAI API client (GPT-4, GPT-4o)
+anthropic>=0.25.0        # Anthropic API client (Claude)
+google-generativeai>=0.5.0  # Google API client (Gemini)
+
+# Configuration
+PyYAML>=6.0              # YAML configuration parsing
+python-dotenv>=1.0.0     # Environment variable management
+
+# OCR (Optional - for scanned PDFs)
+pytesseract>=0.3.10      # Tesseract OCR wrapper
+# Note: Requires Tesseract OCR installed on system
+
+# Utilities
+dataclasses-json>=0.6.0  # JSON serialization for dataclasses
+tqdm>=4.66.0             # Progress bars
+
+# Development Dependencies (optional)
+# pytest>=8.0.0          # Testing framework
+# black>=24.0.0          # Code formatting
+# mypy>=1.8.0            # Type checking
